@@ -1,0 +1,52 @@
+{
+  "register": [
+    {
+      "name": "SignUp",
+      "href": "/register"
+    },
+    {
+      "name": "Login",
+      "href": "/login"
+    }
+  ],
+  "nav_menu": [
+    {
+      "name": "OVA",
+      "href": "/ova"
+    },
+    {
+      "name": "Anime",
+      "href": "/anime"
+    },
+    {
+      "name": "Contact",
+      "href": "/contact"
+    }
+  ],
+
+  "hamburger_menu": [
+    {
+      "name": "Home",
+      "href": "/"
+    },
+    {
+      "name": "OVA",
+      "href": "/ova"
+    },
+    {
+      "name": "Contact",
+      "href": "/contact"
+    }
+  ],
+  "create_update_menu": [
+    {
+      "name": "Role",
+      "href": "/create/role"
+    },
+    {
+      "name": "Permission",
+      "href": "/create/permission",
+      "img": "UserPlus"
+    }
+  ]
+}
