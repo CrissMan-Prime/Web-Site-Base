@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/ui/app-siddebar";
+import Navbar from "@/components/ui/navbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cookies } from "next/headers"
 
@@ -11,7 +12,7 @@ export default async function Layout({
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <main className="flex w-screen h-screen max-h-full">
+      <main className="flex flex-row w-screen h-screen max-h-full">
         <div className="h-full">
           <AppSidebar />
         </div>

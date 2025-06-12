@@ -1,5 +1,4 @@
 import Link from "next/link";
-import list from "./list.json";
 import Profile from "./profile";
 
 export default function Navbar() {
@@ -10,13 +9,7 @@ export default function Navbar() {
       </Link>
       |
       <div className="flex grow px-5">
-        {list.nav_menu.map((navItem, index) => {
-          return (
-            <Link href={navItem.href} className="pr-2" key={index}>
-              {navItem.name}
-            </Link>
-          );
-        })}
+       
       </div>
       
       <div className="flex px-5">

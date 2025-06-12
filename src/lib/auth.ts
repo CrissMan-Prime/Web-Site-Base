@@ -1,4 +1,4 @@
-import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth"
+import NextAuth, { AuthError, CredentialsSignin, type DefaultSession } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
@@ -37,10 +37,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const password = credentials.password as string;
                 const validatedData = LoginSchema.safeParseAsync(credentials);
                 if (session) {
-                    throw new Error("You are connected");
+                    throw new AuthError("You are connected");
                 };
                 if (!validatedData) {
-                    throw new Error("Invalid Data");
+                    throw new AuthError("Invalid Data");
                 };
                 if (!email || !password) {
                     throw new CredentialsSignin("Please provide both email and password");
@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const isMatched = await compare(password, user?.password);
 
                 if (!isMatched) {
-                    throw new Error("Password did not matched");
+                    throw new AuthError("Password did not matched");
                 };
                 const userData = {
                     id: user.id,

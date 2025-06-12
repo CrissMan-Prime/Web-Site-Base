@@ -34,7 +34,14 @@ model Role {
   permission Json?
 }
 
-enum Permission {
+
+model Permission {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  uuid       String     @unique @default(uuid()) @db.String
+  name       String     @unique
+}
+
+/* enum Permission {
   ROLE_CREATE
   USER_CREATE
   USER_UPDATE
@@ -42,7 +49,7 @@ enum Permission {
   ROLE_DELETE
   USER_DELETE
   USER_PERMISSION
-}
+} */
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId

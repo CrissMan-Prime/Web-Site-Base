@@ -56,20 +56,17 @@ export default function Profile() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[250px] rounded-xl" align="end">
         <div className="flex flex-row py-1 p-2">
-          {session?.user?.image ? (
+          {session?.user.image ? (
             <Avatar>
-              <AvatarImage src={session?.user?.image as string} />
+              <AvatarImage src={session?.user?.image } />
               <AvatarFallback>TA</AvatarFallback>
             </Avatar>
           ) : null}
 
           <div className="flex flex-col w-full ">
-            <div className="flex pl-2 justify-center">
+            <p className="flex pl-2 justify-center">
               {session.user.name} {session.user.firstName}
-            </div>
-            <div className="flex justify-center">
-              Arch: {session.user.money}$
-            </div>
+            </p>
           </div>
         </div>
         <DropdownMenuSeparator className="px-2" />

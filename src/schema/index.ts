@@ -59,56 +59,52 @@ export const LoginSchema = z.object({
         }),
 });
 
-export const ShortenerSchema = z.object({
-    original: z
+export const RoleSchema = z.object({
+    permission: z.array(z.string()),
+    color: z.string(),
+    name: z
         .string()
-        .includes("https://", { message: "Must include https://" })
-        .nonempty({
-            message: "The link must not be empty",
+        .min(5, {
+            message: "The role name must be at least 6 characters long",
         })
-        .min(3, {
-            message: "The name must be at least 3 characters long",
-
+        .max(64, {
+            message: "Your role name is too long, the limit is 64 letters.",
         }),
-    author: z
-        .string()
-        .nonempty({
-            message: "The uuid must not be empty",
-        })
-        .min(3, {
-            message: "The uuid must be at least 3 characters long",
+});
 
+export const RoleUpdateSchema = z.object({
+    uuid: z.string(),
+    permission: z.array(z.string()),
+    color: z.string(),
+    name: z
+        .string()
+        .min(5, {
+            message: "The role name must be at least 6 characters long",
+        })
+        .max(64, {
+            message: "Your role name is too long, the limit is 64 letters.",
+        }),
+});
+
+
+export const PermissionSchema = z.object({
+    name: z
+        .string()
+        .min(5, {
+            message: "The permission must be at least 6 characters long",
+        })
+        .max(64, {
+            message: "Your permission is too long, the limit is 64 letters.",
         }),
 })
-
-export const ShortenerUpdateSchema = z.object({
-    original: z
+export const PermissionUpdateSchema = z.object({
+    uuid: z.string(),
+    name: z
         .string()
-        .includes("https://", { message: "Must include https://" })
-        .nonempty({
-            message: "The link must not be empty",
+        .min(5, {
+            message: "The permission must be at least 6 characters long",
         })
-        .min(3, {
-            message: "The name must be at least 3 characters long",
-
-        })
-        .optional(),
-    uuid: z
-        .string()
-        .nonempty({
-            message: "The link must not be empty",
-        })
-        .min(3, {
-            message: "The name must be at least 3 characters long",
-
-        }),
-    owner: z
-        .string()
-        .nonempty({
-            message: "The uuid must not be empty",
-        })
-        .min(3, {
-            message: "The uuid must be at least 3 characters long",
-
+        .max(64, {
+            message: "Your permission is too long, the limit is 64 letters.",
         }),
 })

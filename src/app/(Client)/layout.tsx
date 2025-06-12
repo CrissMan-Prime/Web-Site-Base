@@ -5,16 +5,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <main className="flex flex-col w-screen max-w-screen h-screen overflow-x-hidden">
-      <div className="absolute w-full text-2xl h-[8%]">
+      <div className="w-full text-2xl h-[15%] p-2">
         <Navbar />
       </div>
-
-      <div className="max-w-full">{children}</div>
-      <div className="flex items-end w-full max-h-[6%] h-10">
-
-      </div>
+      <div className="max-w-full h-full">{children}</div>
+      <div className="flex items-end w-full max-h-[6%] h-10"></div>
     </main>
   );
 }
