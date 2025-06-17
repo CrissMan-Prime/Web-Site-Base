@@ -10,16 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-
-import { CgProfile } from "react-icons/cg";
-import { GoHistory } from "react-icons/go";
-import { FaList } from "react-icons/fa";
-import { MdOutlineAdminPanelSettings } from "react-icons/md";
-/* import { TbDeviceIpadMinus } from "react-icons/tb"; */
-import { FaUsersViewfinder } from "react-icons/fa6";
-import { IoSettingsOutline } from "react-icons/io5";
-import { CiBoxList } from "react-icons/ci";
-
+import { UserCog, UserCircle, History, ListOrdered, Cog, List, ShieldCheck } from 'lucide-react';
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -27,61 +18,51 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-/* import { BiCategory } from "react-icons/bi";
-import { CiViewColumn } from "react-icons/ci";
-import { CiViewList } from "react-icons/ci";
-import { GoVideo } from "react-icons/go"; */
 import Sidebar_Profile from "./sidebar_profile";
 
 const PageUserList = [
   {
     title: "Profile",
     url: "/dashboard/profile",
-    icon: CgProfile,
+    icon: UserCircle,
   },
   {
     title: "History",
     url: "/dashboard/history",
-    icon: GoHistory,
+    icon: History,
   },
   {
     title: "My List",
     url: "/dashboard/my-list",
-    icon: FaList,
+    icon: ListOrdered,
   },
 ];
 
 const DropDownList = [
   {
     title: "Administrative Side",
-    icon: MdOutlineAdminPanelSettings,
+    icon: ShieldCheck,
     category: "admin",
   },
 ];
 const DD_Item_List = [
   {
-    title: "Role Administaror",
+    title: "User Administrator",
     category: "admin",
-    url: "/dashboard/admin/role-administrator",
-    icon: FaUsersViewfinder,
+    url: "/dashboard/admin/user-administrator",
+    icon: UserCog,
   },
   {
     title: "Site Settings",
     category: "admin",
-    url: "/dashboard/admin/role",
-    icon: IoSettingsOutline,
+    url: "/dashboard/admin/site_settings",
+    icon: Cog,
   },
   {
     title: "Page List",
     category: "admin",
-    url: "/dashboard/admin/role",
-    icon: CiBoxList,
-  },
-  {
-    title: "User",
-    category: "admin",
-    url: "/dashboard/admin/role",
-    icon: CgProfile,
+    url: "/dashboard/admin/page_list",
+    icon: List,
   },
 ];
 
@@ -135,8 +116,8 @@ export function AppSidebar() {
               <div className="flex justify-center py-2">
                 <div className="h-[2px] w-[80%] bg-secondary" />
               </div>
-              {DropDownList.map((dList, dindex) => (
-                <Collapsible className="flex flex-col" key={dindex}>
+              {DropDownList.map((dList, dIndex) => (
+                <Collapsible className="flex flex-col" key={dIndex}>
                   <CollapsibleTrigger className="flex justify-center items-center flex-row gap-2 flex-none truncate">
                     <dList.icon size={26} /> {dList.title}
                   </CollapsibleTrigger>
@@ -194,8 +175,8 @@ export function AppSidebar() {
               <div className="flex justify-center py-2">
                 <div className="h-[2px] w-[80%] bg-border" />
               </div>
-              {DropDownList.map((dList, dindex) => (
-                <Collapsible className="flex flex-col" key={dindex}>
+              {DropDownList.map((dList, dIndex) => (
+                <Collapsible className="flex flex-col" key={dIndex}>
                   <CollapsibleTrigger className="flex justify-center items-center flex-row gap-2 flex-none truncate">
                     <dList.icon size={26} />
                   </CollapsibleTrigger>

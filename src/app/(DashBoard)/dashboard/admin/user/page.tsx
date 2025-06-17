@@ -1,5 +1,5 @@
 import Client from "./client";
 
-export default function Profile() {
+export default function User() {
     return <Client/>
 }

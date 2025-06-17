@@ -2,7 +2,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth"
-import { RoleSchema } from "@/schema";
+import { UpdateUserSchema, UserSchema } from "@/schema";
+import { compare, hash } from "bcrypt-ts";
+
 
 export async function GET() {
     try {
@@ -19,35 +21,30 @@ export async function GET() {
                 { status: 400 }
             )
         };
-        const role = await prisma.role.findMany({
-            select: {
-                uuid: true,
-                color: true,
-                name: true,
-                permission: true,
-            }
+        const Api_data = await prisma.user.findMany({
         });
-        if (!role) {
+        if (!Api_data) {
             return NextResponse.json(
-                { message: "No role found" },
+                { message: "No user found" },
                 { status: 400 }
             )
         };
         return NextResponse.json(
-            { message: role },
+            { message: Api_data },
             { status: 200 }
         );
     } catch {
         return NextResponse.json(
-            { message: "Failed fetch the roles" },
+            { message: "Failed fetch the users" },
             { status: 500 }
         );
     };
 }
-export async function POST(req: NextRequest) {
+
+export async function PUT(req: NextRequest) {
     try {
         const data = await req.json()
-        const validatedData = await RoleSchema.safeParseAsync(data);
+        const validatedData = await UpdateUserSchema.safeParseAsync(data);
         const session = await auth()
         if (!session) {
             return NextResponse.json(
@@ -60,60 +57,74 @@ export async function POST(req: NextRequest) {
                 { message: "Invalid input data" },
                 { status: 400 }
             );
-        }
-
-        const PermissionExist = await prisma.permission.findMany({
-            where: {
-                name: `${data.permission}`,
-            },
-        });
-        if (!PermissionExist) {
-            return NextResponse.json(
-                { message: "Permission does`t not exist" },
-                { status: 400 }
-            );
-        }
+        };
         if (session?.user?.role != "Owner") {
             return NextResponse.json(
                 { message: "You are not the Owner" },
                 { status: 400 }
             )
         };
-        const nameExist = await prisma.role.findUnique({
+        const uuidExist = await prisma.user.findUnique({
             where: {
-                name: data.name
+                uuid: data.uuid
             }
-        })
-        if (nameExist) {
+        });
+        if (!uuidExist) {
             return NextResponse.json(
-                { message: "Role name already exists in the database" },
+                { message: "There is no user with this uuid" },
                 { status: 400 }
             )
         };
-        const role = await prisma.role.create({
-            data: {
-                name: data.name,
-                color: data.color,
-                permission: data.permission
+        const passData = await prisma.user.findUnique({
+            where: {
+                uuid: data.uuid
+            },
+            select: {
+                password: true,
             }
         });
-        if (!role) {
+        if (!passData) {
             return NextResponse.json(
-                { message: "The role could not be created." },
+                { message: "This account could not be found." },
+                { status: 400 }
+            )
+        };
+        const isMatched = await compare(data.password, passData.password);
+        if (!isMatched) {
+            return NextResponse.json(
+                { message: "Password does not match" },
+                { status: 400 }
+            )
+        };
+        const Data_api = await prisma.user.update({
+            where: {
+                uuid: data.uuid,
+            },
+            data: {
+                firstName: data.firstName,
+                name: data.name,
+                email: data.email,
+                role: data.role,
+            }
+        });
+        if (!Data_api) {
+            return NextResponse.json(
+                { message: "The user could not be updated." },
                 { status: 400 }
             )
         };
         return NextResponse.json(
-            { message: "Permission created successfully" },
+            { message: "User updated successfully" },
             { status: 200 }
         );
     } catch {
         return NextResponse.json(
-            { message: "Failed fetch the role" },
+            { message: "Failed fetch the user" },
             { status: 500 }
         );
     };
-}
+};
+
 export async function DELETE(req: NextRequest) {
     try {
         const data = await req.json()
@@ -130,44 +141,61 @@ export async function DELETE(req: NextRequest) {
                 { status: 400 }
             )
         };
-        const uuidExist = await prisma.role.findUnique({
-            where: {
-                uuid: data
-            }
-        })
-        if (!uuidExist) {
-            return NextResponse.json(
-                { message: "There is no role with this uuid" },
-                { status: 400 }
-            )
-        };
-        const api_data = await prisma.role.delete({
+        const uuidExist = await prisma.user.findUnique({
             where: {
                 uuid: data
             }
         });
-        if (!api_data) {
+        if (!uuidExist) {
             return NextResponse.json(
-                { message: "The role could not be delete." },
+                { message: "There is no user with this uuid" },
+                { status: 400 }
+            )
+        };
+        if (uuidExist.role == "Owner") {
+            return NextResponse.json(
+                { message: "The user have the user Owner." },
+                { status: 400 }
+            )
+        };
+        const isYou = await prisma.user.findUnique({
+            where: {
+                uuid: data
+            }
+        })
+         if (isYou?.uuid == session?.user?.uuid ) {
+            return NextResponse.json(
+                { message: "You can't delete your account" },
+                { status: 400 }
+            )
+        };
+        const data_api = await prisma.user.delete({
+            where: {
+                uuid: data
+            }
+        });
+        if (!data_api) {
+            return NextResponse.json(
+                { message: "The user could not be delete." },
                 { status: 400 }
             )
         };
         return NextResponse.json(
-            { message: "Role delete successfully" },
+            { message: "User delete successfully" },
             { status: 200 }
         );
     } catch {
         return NextResponse.json(
-            { message: "Failed fetch the role" },
+            { message: "Failed fetch the user" },
             { status: 500 }
         );
     };
-}
+};
 
-export async function PUT(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
         const data = await req.json()
-        const validatedData = await RoleSchema.safeParseAsync(data);
+        const validatedData = await UserSchema.safeParseAsync(data);
         const session = await auth()
         if (!session) {
             return NextResponse.json(
@@ -180,48 +208,50 @@ export async function PUT(req: NextRequest) {
                 { message: "Invalid input data" },
                 { status: 400 }
             );
-        }
+        };
+        const Data_Exist = await prisma.user.findUnique({
+            where: {
+                email: data.email
+            },
+        });
+        if (Data_Exist) {
+            return NextResponse.json(
+                { message: "The email address already exists in the database." },
+                { status: 400 }
+            );
+        };
         if (session?.user?.role != "Owner") {
             return NextResponse.json(
                 { message: "You are not the Owner" },
                 { status: 400 }
             )
         };
-        const uuidExist = await prisma.role.findUnique({
-            where: {
-                uuid: data.uuid
-            }
-        })
-        if (!uuidExist) {
-            return NextResponse.json(
-                { message: "There is no role with this uuid" },
-                { status: 400 }
-            )
-        };
-        const role = await prisma.role.update({
-            where: {
-                uuid: data.uuid
-            },
+        const hashedPass = await hash(data.password, 15)
+        const User_Data = await prisma.user.create({
             data: {
+                firstName: data.firstName,
                 name: data.name,
-                color: data.color,
-                permission: data.permission,
+                email: data.email,
+                role: data.role,
+                image: "",
+                password: hashedPass,
             }
         });
-        if (!role) {
+        if (!User_Data) {
             return NextResponse.json(
-                { message: "The role could not be updated." },
+                { message: "The user could not be created." },
                 { status: 400 }
             )
         };
         return NextResponse.json(
-            { message: "Role updated successfully" },
+            { message: "User created successfully" },
             { status: 200 }
         );
     } catch {
         return NextResponse.json(
-            { message: "Failed fetch the role" },
+            { message: "Failed fetch the user" },
             { status: 500 }
         );
     };
 }
+

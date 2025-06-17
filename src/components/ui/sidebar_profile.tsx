@@ -24,7 +24,7 @@ export default function Sidebar_Profile() {
   if (loading) {
     return (
       <main className="w-full h-full">
-        <div className="flex h-full w-full pb-10 justify-center items-center">
+        <div className="flex size-full pb-10 justify-center items-center">
           <AiOutlineLoading className="flex animate-spin" size={30} />
         </div>
       </main>

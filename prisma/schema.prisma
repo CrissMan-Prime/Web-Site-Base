@@ -41,16 +41,6 @@ model Permission {
   name       String     @unique
 }
 
-/* enum Permission {
-  ROLE_CREATE
-  USER_CREATE
-  USER_UPDATE
-  ROLE_UPDATE
-  ROLE_DELETE
-  USER_DELETE
-  USER_PERMISSION
-} */
-
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
   uuid              String  @default(uuid()) @db.String

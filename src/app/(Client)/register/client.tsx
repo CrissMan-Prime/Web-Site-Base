@@ -25,10 +25,12 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export default function Client() {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [passwordVisibility, setPasswordVisibility] = useState(false);
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -54,7 +56,7 @@ export default function Client() {
         return null;
       }
       setLoading(false);
-      toast.success("Success " + response.status, {
+      toast.success("Success ", {
         description: `${message}`,
       });
       await signIn("credentials", {
@@ -67,9 +69,9 @@ export default function Client() {
       });
     }
   };
-    if(session) {
-      redirect("/")
-    }
+  if (session) {
+    redirect("/");
+  }
 
   return (
     <div className="flex h-full justify-center items-center ">
@@ -95,7 +97,7 @@ export default function Client() {
                             First Name
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -132,18 +134,38 @@ export default function Client() {
                   )}
                 />
                 <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-start">Password</FormLabel>
-                      <FormControl>
-                        <Input placeholder="" type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    control={form.control}
+                    name="password"
+                    render={({}) => (
+                      <FormItem className="flex flex-col w-full justify-center">
+                        <FormLabel>Password </FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <div>
+                            <Input
+                              onChange={(e) => {
+                                form.setValue("password", e.target.value);
+                              }}
+                              type={passwordVisibility ? "text" : "password"}
+                            />
+                            <Button
+                              variant={"ghost"}
+                              type="button"
+                              className="flex items-center  text-muted-foreground"
+                              onClick={() =>
+                                setPasswordVisibility(!passwordVisibility)
+                              }
+                            >
+                              {passwordVisibility ? (
+                                <EyeOffIcon />
+                              ) : (
+                                <EyeIcon />
+                              )}
+                            </Button>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "loading.." : "Register"}
                 </Button>

@@ -10,8 +10,7 @@ export const RegisterSchema = z.object({
         .max(64, { message: "Your email is too long, the limit is 64 letters." })
         .email({
             message: "Please add a valid email",
-        })
-        .includes("gmail.com", { message: "Must include gmail.com" }),
+        }),
     firstName: z
         .string()
         .nonempty({
@@ -64,8 +63,8 @@ export const RoleSchema = z.object({
     color: z.string(),
     name: z
         .string()
-        .min(5, {
-            message: "The role name must be at least 6 characters long",
+        .min(4, {
+            message: "The role name must be at least 4 characters long",
         })
         .max(64, {
             message: "Your role name is too long, the limit is 64 letters.",
@@ -78,8 +77,8 @@ export const RoleUpdateSchema = z.object({
     color: z.string(),
     name: z
         .string()
-        .min(5, {
-            message: "The role name must be at least 6 characters long",
+        .min(4, {
+            message: "The role name must be at least 4 characters long",
         })
         .max(64, {
             message: "Your role name is too long, the limit is 64 letters.",
@@ -97,6 +96,7 @@ export const PermissionSchema = z.object({
             message: "Your permission is too long, the limit is 64 letters.",
         }),
 })
+
 export const PermissionUpdateSchema = z.object({
     uuid: z.string(),
     name: z
@@ -108,3 +108,87 @@ export const PermissionUpdateSchema = z.object({
             message: "Your permission is too long, the limit is 64 letters.",
         }),
 })
+
+export const UpdateUserSchema = z.object({
+    uuid: z.string(),
+    email: z
+        .string()
+        .nonempty({
+            message: "The email must not be empty",
+        })
+        .max(64, { message: "Your email is too long, the limit is 64 letters." })
+        .email({
+            message: "Please add a valid email",
+        }),
+    firstName: z
+        .string()
+        .nonempty({
+            message: "The firs name must not be empty",
+        })
+        .max(15, { message: "Your name is too long, the limit is 15 letters." })
+        .min(3, {
+            message: "The name must be at least 3 characters long",
+        }),
+    name: z
+        .string()
+        .nonempty({
+            message: "The name must not be empty",
+        })
+        .max(15, { message: "Your name is too long, the limit is 15 letters." })
+        .min(3, {
+            message: "The name must be at least 3 characters long",
+
+        }),
+    role: z
+        .string()
+        .nonempty({
+            message: "The name must not be empty",
+        }),
+    password: z
+        .string(),
+ 
+});
+export const UserSchema = z.object({
+    email: z
+        .string()
+        .nonempty({
+            message: "The email must not be empty",
+        })
+        .max(64, { message: "Your email is too long, the limit is 64 letters." })
+        .email({
+            message: "Please add a valid email",
+        }),
+    firstName: z
+        .string()
+        .nonempty({
+            message: "The firs name must not be empty",
+        })
+        .max(15, { message: "Your name is too long, the limit is 15 letters." })
+        .min(3, {
+            message: "The name must be at least 3 characters long",
+        }),
+    name: z
+        .string()
+        .nonempty({
+            message: "The name must not be empty",
+        })
+        .max(15, { message: "Your name is too long, the limit is 15 letters." })
+        .min(3, {
+            message: "The name must be at least 3 characters long",
+
+        }),
+    role: z
+        .string()
+        .nonempty({
+            message: "The name must not be empty",
+        }),
+    password: z
+        .string()
+        .nonempty({
+            message: "The password must not be empty",
+        })
+        .max(30, { message: "Your password is too long, the limit is 30 letters." })
+        .min(6, {
+            message: "The password must be at least 6 characters long",
+        }),
+});

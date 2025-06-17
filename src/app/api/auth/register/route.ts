@@ -10,7 +10,34 @@ export async function POST(req: NextRequest) {
         const data = await req.json()
         const validatedData = await RegisterSchema.safeParse(data);
         const session = await auth()
+        const res = await fetch("https://data.iana.org/TLD/tlds-alpha-by-domain.txt")
+        const domain = await res.text()
+        const email = data.email.split('@')[1]
+        const domain_email = email.split('.')[0]
 
+        if (!domain) {
+            return NextResponse.json(
+                { message: "Invalid Data from iana" },
+                { status: 400 }
+            )
+        };
+
+        const domainCompare = domain.split(`\n`)
+        .map(tld => tld.toLowerCase())
+        .filter(line => !line.startsWith(`#`) && line.trim() !== '');
+
+        if (!domainCompare) {
+            return NextResponse.json(
+                { message: "Invalid Data from Iana" },
+                { status: 400 }
+            )
+        };
+        if (!domainCompare.includes(domain_email)) {
+            return NextResponse.json(
+                { message: "The domain is not valid." },
+                { status: 400 }
+            )
+        };
         const userExists = await prisma.user.findUnique({
             where: {
                 email: data.email,
@@ -44,7 +71,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 { message: "Something went wrong" },
                 { status: 400 }
-            )};
+            )
+        };
         const RoleExist = await prisma.role.findUnique({
             where: {
                 name: role

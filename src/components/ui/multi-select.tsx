@@ -38,7 +38,7 @@ const multiSelectVariants = cva(
     variants: {
       variant: {
         default:
-          "border-card w-ful text-foreground bg-background hover:bg-background",
+          "border-card w-ful text-foreground bg-input hover:bg-background",
         secondary:
           "border-background bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
@@ -201,12 +201,12 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              "flex w-full p-1 rounded-md bg-background border-border border min-h-10 h-auto items-center justify-between hover:bg-background [&_svg]:pointer-events-auto",
+              "flex w-full p-1 rounded-md bg-input border-border border min-h-10 h-auto items-center justify-between hover:bg-input [&_svg]:pointer-events-auto",
               className
             )}
           >
             {selectedValues.length > 0 ? (
-              <div className="flex justify-between items-center bg-background">
+              <div className="flex justify-between items-center bg-input">
                 <div className="flex flex-wrap items-center">
                   {selectedValues.slice(0, maxCount).map((value) => {
                     const option = options.find((o) => o.name === value);
@@ -237,7 +237,7 @@ export const MultiSelect = React.forwardRef<
                   {selectedValues.length > maxCount && (
                     <Badge
                       className={cn(
-                        "bg-transparent text-foreground border-foreground/1 hover:bg-transparent",
+                        "bg-transparent text-foreground border-foreground/1",
                         isAnimating ? "animate-bounce" : "",
                         multiSelectVariants({ variant })
                       )}
@@ -281,10 +281,9 @@ export const MultiSelect = React.forwardRef<
         </PopoverTrigger>
         <PopoverContent
           className="flex p-0"
-          align="center"
           onEscapeKeyDown={() => setIsPopoverOpen(false)}
         >
-          <Command className="bg-background ">
+          <Command className="bg-input">
             <CommandInput
               placeholder="Search..."
               onKeyDown={handleInputKeyDown}
@@ -295,7 +294,7 @@ export const MultiSelect = React.forwardRef<
                 <CommandItem
                   key="all"
                   onSelect={toggleAll}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-background"
                 >
                   <div
                     className={cn(

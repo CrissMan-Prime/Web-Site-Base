@@ -8,7 +8,7 @@ export default function RootLayout({
 
   return (
     <main className="flex flex-col w-screen max-w-screen h-screen overflow-x-hidden">
-      <div className="w-full text-2xl h-[15%] p-2">
+      <div className="w-full text-2xl h-[10%] p-2">
         <Navbar />
       </div>
       <div className="max-w-full h-full">{children}</div>

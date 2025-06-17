@@ -24,14 +24,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData, TValue > {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  searchBy:  "email" | "name" | "uuid" 
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  searchBy,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -67,9 +69,9 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center lg:hidden gap-3 py-4">
           <Input
             placeholder="Search ..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
+              table.getColumn(searchBy)?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -174,10 +176,10 @@ export function DataTable<TData, TValue>({
               <Input
                 placeholder="Search ..."
                 value={
-                  (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                  (table.getColumn(searchBy)?.getFilterValue() as string) ?? ""
                 }
                 onChange={(event) =>
-                  table.getColumn("name")?.setFilterValue(event.target.value)
+                  table.getColumn(searchBy)?.setFilterValue(event.target.value)
                 }
                 className="max-w-sm"
               />

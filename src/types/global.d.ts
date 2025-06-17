@@ -6,6 +6,16 @@ interface RoleType {
     color: string;
 }
 
+interface UserType{
+    uuid: Key;
+    name: string;
+    email: string;
+    firstName: string;
+    image: string;
+    emailVerified: string;
+    role: string;
+
+}
 
 interface PermissionType {
     uuid: Key;

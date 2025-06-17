@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import Role_Form from "./role_form";
-import Permission_Form from "./permission_form";
+import User_Form from "../user-administrator/user_form";
 
-export default function CreateComp() {
+export default function Client() {
   const [loading, setLoading] = useState(true);
 
   function Timeout() {
@@ -21,7 +20,7 @@ export default function CreateComp() {
   if (loading) {
     return (
       <main className="w-full h-full">
-        <div className="flex h-full w-full justify-center items-center">
+        <div className="flex size-full justify-center items-center">
           <AiOutlineLoading className="flex animate-spin" size={50} />
         </div>
       </main>
@@ -29,18 +28,15 @@ export default function CreateComp() {
   }
 
   return (
-    <main className="flex flex-col h-full w-full px-20 pt-10">
-      <p className="text-xl font-bold">Role Administrator</p>
+    <main className="flex flex-col size-full px-20 pt-10">
+      <p className="text-xl font-bold">User Administrator</p>
       <p className="pb-2">
-        Manage all roles with admin-level permissions. Create, edit, and assign
-        access levels based on responsibilities.
+        Manage all user accounts with admin-level control. 
+        Create, update, or remove users and modify their data as needed.
       </p>
       <hr />
       <div className="basis-1/2">
-        <Role_Form />
-      </div>
-      <div className="basis-1/2">
-        <Permission_Form />
+        <User_Form/>
       </div>
     </main>
   );

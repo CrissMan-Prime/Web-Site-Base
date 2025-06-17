@@ -10,21 +10,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RoleSchema, RoleUpdateSchema } from "@/schema";
+import { PermissionSchema, PermissionUpdateSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import "react-color-palette/css";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ColorPicker, useColor } from "react-color-palette";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/dataTable";
@@ -42,25 +35,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 
-export default function Role_Form() {
+export default function Permission_Form() {
   const [loading, setLoading] = useState(false);
-  const [RoleUpdate, setRoleUpdate] = useState(false);
-  const [color, setColor] = useColor("#2fb95d");
-  const [role, setRole] = useState<RoleType[]>([]);
+  const [PermissionUpdate, setPermissionUpdate] = useState(false);
   const [permissions, setPermission] = useState<PermissionType[]>([]);
-
-  const RoleUpdateForm = useForm<z.infer<typeof RoleUpdateSchema>>({
-    resolver: zodResolver(RoleUpdateSchema),
+  const PermissionForm = useForm<z.infer<typeof PermissionSchema>>({
+    resolver: zodResolver(PermissionSchema),
   });
 
-  const RoleForm = useForm<z.infer<typeof RoleSchema>>({
-    resolver: zodResolver(RoleSchema),
+  const PermissionUpdateForm = useForm<z.infer<typeof PermissionUpdateSchema>>({
+    resolver: zodResolver(PermissionUpdateSchema),
   });
-
-  const onSubmitUpdate = async (data: z.infer<typeof RoleSchema>) => {
-    setLoading(true);
+  const onSubmitUpdate = async (
+    data: z.infer<typeof PermissionUpdateSchema>
+  ) => {
     try {
-      const response = await fetch("/api/role", {
+      const response = await fetch("/api/permission", {
         method: "PUT",
         body: JSON.stringify(data),
       });
@@ -87,11 +77,10 @@ export default function Role_Form() {
   };
 
   const onDelete = async () => {
-    setLoading(true);
     try {
-      const response = await fetch("/api/role", {
+      const response = await fetch("/api/permission", {
         method: "DELETE",
-        body: JSON.stringify(RoleUpdateForm.getValues("uuid")),
+        body: JSON.stringify(PermissionUpdateForm.getValues("uuid")),
       });
       const message = (await response.json()).message as string;
 
@@ -109,16 +98,15 @@ export default function Role_Form() {
       });
     } catch (err) {
       setLoading(false);
-      toast.error("Internal Error", {
+      toast.error("Internal Error" + err, {
         description: `${err}`,
       });
     }
   };
 
-  const onSubmit = async (data: z.infer<typeof RoleSchema>) => {
-    setLoading(true);
+  const onSubmit = async (data: z.infer<typeof PermissionSchema>) => {
     try {
-      const response = await fetch("/api/role", {
+      const response = await fetch("/api/permission", {
         method: "POST",
         body: JSON.stringify(data),
       });
@@ -149,18 +137,12 @@ export default function Role_Form() {
     const data = await res.json();
     setPermission(data.message);
   }
-  async function fetchRole() {
-    const res = await fetch("/api/role");
-    const data = await res.json();
-    setRole(data.message);
-  }
 
   useEffect(() => {
-    fetchRole();
     fetchPermission();
   }, [loading]);
 
-  const columns: ColumnDef<RoleType>[] = [
+  const columns: ColumnDef<PermissionType>[] = [
     {
       accessorKey: "check",
       header: ({ table }) => (
@@ -226,22 +208,6 @@ export default function Role_Form() {
       },
     },
     {
-      accessorKey: "color",
-      header: () => <p className="text-start">Color</p>,
-      cell: ({ row }) => {
-        const names = String(row.getValue("color"));
-
-        return (
-          <div
-            className={`p-1 rounded-sm text-start flex flex-row items-center justify-center`}
-            style={{ backgroundColor: names }}
-          >
-            <div>{names}</div>
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: "menu",
       header: () => <p></p>,
       cell: ({ row }) => {
@@ -272,22 +238,25 @@ export default function Role_Form() {
 
                 <DropdownMenuItem
                   onClick={() => {
-                    RoleUpdateForm.setValue("uuid", row.getValue("uuid"));
+                    PermissionUpdateForm.setValue("uuid", row.getValue("uuid"));
                     onDelete();
                   }}
                 >
                   Delete Permission
                 </DropdownMenuItem>
-                {RoleUpdate === false ? (
+                {PermissionUpdate === false ? (
                   <DropdownMenuItem
                     onClick={() => {
-                      setRoleUpdate(true);
-                      setColor((prev) => ({
-                        ...prev,
-                        hex: row.getValue("color"),
-                      }));
-                      RoleUpdateForm.setValue("name", row.getValue("name"));
-                      RoleUpdateForm.setValue("uuid", row.getValue("uuid"));
+                      setPermissionUpdate(true);
+                      console.log(PermissionUpdateForm.getValues());
+                      PermissionUpdateForm.setValue(
+                        "uuid",
+                        row.getValue("uuid")
+                      );
+                      PermissionUpdateForm.setValue(
+                        "name",
+                        row.getValue("name")
+                      );
                     }}
                   >
                     Update Permission
@@ -302,107 +271,100 @@ export default function Role_Form() {
   ];
   return (
     <>
-      <h2 className="text-xl">Role</h2>
-      <div className="flex md:flex-row flex-col w-full">
-        <div className="flex flex-col w-full lg:w-[50%] lg:max-w-[50%] justify-start pt-5 items-center">
-          <Form {...RoleForm}>
-            <form
-              onSubmit={RoleForm.handleSubmit(onSubmit)}
-              className="flex flex-col w-full lg:px-5 gap-2"
-            >
-              <FormField
-                control={RoleForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col basis-3 w-full justify-center">
-                    <FormLabel>Name</FormLabel>
-                    <FormControl className="flex items-center w-full rounded-md">
-                      <Input placeholder="Role Name" {...field} />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={RoleForm.control}
-                name="color"
-                render={() => (
-                  <FormItem className="flex flex-col basis-3 w-full justify-center">
-                    <FormLabel>Color</FormLabel>
-                    <FormControl className="flex items-center w-full rounded-md">
-                      <Popover>
-                        <PopoverTrigger
-                          className={`flex border-[1px] p-2 rounded-lg`}
-                          style={{ backgroundColor: color.hex }}
-                        >
-                          {color.hex}
-                        </PopoverTrigger>
-                        <PopoverContent className="bg-zinc-900 w-full">
-                          <ColorPicker
-                            hideInput={["rgb", "hsv"]}
-                            color={color}
-                            onChange={(color) => {
-                              setColor(color);
-                            }}
-                            onChangeComplete={(e) => {
-                              RoleForm.setValue("color", e.hex);
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={RoleForm.control}
-                name="permission"
-                render={() => (
-                  <FormItem className="flex flex-col basis-3 w-full justify-center">
-                    <FormLabel>Permission</FormLabel>
-                    <FormControl className="flex items-center w-full rounded-md">
-                      <MultiSelect
-                        onValueChange={(e) => {
-                          RoleForm.setValue("permission", e);
-                        }}
-                        options={permissions}
-                        placeholder="Select Permission"
-                        className="w-full md:w-20rem p-1 pl-2 rounded-md border "
-                      />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className="w-full rounded-md pt-15 "
-                disabled={loading}
+      <hr />
+      <div className="flex md:flex-row flex-col gap-2 w-full">
+        <div className="flex flex-col lg:w-[50%] lg:max-w-[50%] justify-start pt-5 items-center">
+          {PermissionUpdate != true ? (
+            <Form {...PermissionForm}>
+              <form
+                onSubmit={PermissionForm.handleSubmit(onSubmit)}
+                className="flex flex-col w-full lg:px-5 gap-2"
               >
-                {loading ? "loading.." : "Create Role"}
-              </Button>
-            </form>
-          </Form>
+                <FormField
+                  control={PermissionForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col basis-3 w-full justify-center">
+                      <FormLabel>Name</FormLabel>
+                      <FormControl className="flex items-center w-full rounded-md">
+                        <Input placeholder="Permission Name" {...field} />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full rounded-md pt-15 "
+                  disabled={loading}
+                >
+                  {loading ? "loading.." : "Create Permission"}
+                </Button>
+              </form>
+            </Form>
+          ) : (
+            <Form {...PermissionUpdateForm}>
+              <form
+                onSubmit={PermissionUpdateForm.handleSubmit(onSubmitUpdate)}
+                className="flex flex-col w-full lg:px-5 gap-2"
+              >
+                <FormField
+                  control={PermissionUpdateForm.control}
+                  name="name"
+                  render={({ }) => (
+                    <FormItem className="flex flex-col basis-3 w-full justify-center">
+                      <FormLabel>Name Update</FormLabel>
+
+                      <FormControl className="flex items-center w-full rounded-md">
+                        <Input
+                          placeholder="Permission Name"
+                          defaultValue={PermissionUpdateForm.getValues("name")}
+                          onChange={(e) => {
+                            PermissionUpdateForm.setValue(
+                              "name",
+                              e.target.value
+                            );
+                          }}
+                        />
+                      </FormControl>
+
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-row gap-2">
+                  <Button
+                    type="submit"
+                    className="rounded-md pt-15 w-[80%]"
+                    disabled={loading}
+                  >
+                    {loading ? "loading.." : "Update Permission"}
+                  </Button>
+                  <Button
+                    onClick={() => setPermissionUpdate(false)}
+                    className="rounded-md pt-15 w-[30%]"
+                    disabled={loading}
+                  >
+                    {loading ? "loading.." : "Cancel"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          )}
         </div>
         <div className="flex flex-col lg:max-w-[50%] w-full gap-4">
-          <div className="flex flex-col h-20 bg-card rounded-md mt-5 justify-center items-center w-full">
-            <p
-              className="flex p-1 rounded-md"
-              style={{ backgroundColor: color.hex }}
-            >
-              {RoleForm.getValues("name")}
-            </p>
-            <p className="flex truncate max-w-[30%] sm:hidden lg:block">
-              Permission : {RoleForm.getValues("permission")}
+          <div className="flex flex-col bg-card rounded-md mt-5 justify-center items-center size-full">
+            <p className="flex truncate max-w-[30%]">
+              {PermissionUpdate != true
+                ? PermissionForm.getValues("name")
+                : PermissionUpdateForm.getValues("name")}
             </p>
           </div>
-          <DataTable data={role} columns={columns} />
         </div>
       </div>
+      <DataTable data={permissions} searchBy="name" columns={columns} />
     </>
   );
 }

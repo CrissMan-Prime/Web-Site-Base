@@ -1,15 +1,20 @@
 import { AppSidebar } from "@/components/ui/app-siddebar";
-import Navbar from "@/components/ui/navbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cookies } from "next/headers"
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-   const cookieStore = await cookies()
+  const cookieStore = await cookies()
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
+  const session = await auth()
+
+  if (!session?.user) redirect("/")
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <main className="flex flex-row w-screen h-screen max-h-full">

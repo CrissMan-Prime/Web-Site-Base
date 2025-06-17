@@ -23,11 +23,12 @@ import { useForm } from "react-hook-form";
 import { LoginSchema } from "@/schema";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react"
+import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { PasswordField } from "@/components/ui/pass-input";
 
 export default function Client() {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -43,24 +44,24 @@ export default function Client() {
         email: data.email,
         password: data.password,
       });
-       if (result?.error) {
-      toast.error("Error",{
-        description: "Please try again", 
-      });
-    } else {
-      toast.success("Success",{
-        description: result.ok, 
-      });
-      window.location.href = "/";
-    }
+      if (result?.error) {
+        toast.error("Error", {
+          description: "Please try again",
+        });
+      } else {
+        toast.success("Success", {
+          description: result.ok,
+        });
+        window.location.href = "/";
+      }
     } catch (err) {
       toast.error("Internal Error", {
         description: `${err}`,
       });
     }
   };
-  if(session) {
-    redirect("/")
+  if (session) {
+    redirect("/");
   }
   return (
     <div className="flex h-full justify-center items-center ">
@@ -95,7 +96,10 @@ export default function Client() {
                     <FormItem>
                       <FormLabel className="text-start">Password</FormLabel>
                       <FormControl>
-                        <Input placeholder="" type="password" {...field} />
+                        <PasswordField
+                          placeholder="Yor password for update"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
