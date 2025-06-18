@@ -12,7 +12,9 @@ export default function RootLayout({
         <Navbar />
       </div>
       <div className="max-w-full h-full">{children}</div>
-      <div className="flex items-end w-full max-h-[6%] h-10"></div>
+      <div className="flex items-end w-full max-h-[6%] h-10">
+        
+      </div>
     </main>
   );
 }

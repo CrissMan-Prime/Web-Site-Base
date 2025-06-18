@@ -42,7 +42,7 @@ export async function GET() {
         );
     };
 };
-//TODO create a permission checker instead of role permission
+
 export async function POST(req: NextRequest) {
     try {
         const data = await req.json()

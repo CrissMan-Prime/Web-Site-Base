@@ -32,7 +32,7 @@ export default function CreateComp() {
   return (
     <Tabs
       defaultValue="user"
-      className="flex flex-col size-full px-20 pt-10"
+      className="flex flex-col size-full lg:px-20 px-6  lg:pt-10"
     >
       <TabsList className="gap-1 flex justify-start  ">
         <TabsTrigger value="user">User</TabsTrigger>

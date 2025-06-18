@@ -34,11 +34,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import { Tabs, TabsContent} from "@/components/ui/tabs";
 
 export default function Permission_Form() {
   const [loading, setLoading] = useState(false);
   const [PermissionUpdate, setPermissionUpdate] = useState(false);
   const [permissions, setPermission] = useState<PermissionType[]>([]);
+  const [tab, setTab] = useState("create")
+
   const PermissionForm = useForm<z.infer<typeof PermissionSchema>>({
     resolver: zodResolver(PermissionSchema),
   });
@@ -46,6 +49,7 @@ export default function Permission_Form() {
   const PermissionUpdateForm = useForm<z.infer<typeof PermissionUpdateSchema>>({
     resolver: zodResolver(PermissionUpdateSchema),
   });
+
   const onSubmitUpdate = async (
     data: z.infer<typeof PermissionUpdateSchema>
   ) => {
@@ -65,6 +69,8 @@ export default function Permission_Form() {
       }
 
       setLoading(false);
+      setTab("create")
+      PermissionUpdateForm.setValue("name","")
       toast.success("Success", {
         description: `${message}`,
       });
@@ -248,6 +254,7 @@ export default function Permission_Form() {
                   <DropdownMenuItem
                     onClick={() => {
                       setPermissionUpdate(true);
+                      setTab("update")
                       console.log(PermissionUpdateForm.getValues());
                       PermissionUpdateForm.setValue(
                         "uuid",
@@ -269,100 +276,114 @@ export default function Permission_Form() {
       },
     },
   ];
+
   return (
     <>
-      <hr />
-      <div className="flex md:flex-row flex-col gap-2 w-full">
-        <div className="flex flex-col lg:w-[50%] lg:max-w-[50%] justify-start pt-5 items-center">
-          {PermissionUpdate != true ? (
-            <Form {...PermissionForm}>
-              <form
-                onSubmit={PermissionForm.handleSubmit(onSubmit)}
-                className="flex flex-col w-full lg:px-5 gap-2"
-              >
-                <FormField
-                  control={PermissionForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <Input placeholder="Permission Name" {...field} />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="w-full rounded-md pt-15 "
-                  disabled={loading}
+      <div className="flex md:flex-row flex-col">
+        <Tabs value={tab} onValueChange={setTab} className="size-full">
+          <TabsContent value="create">
+            <div className="flex size-full">
+              <Form {...PermissionForm}>
+                <form
+                  onSubmit={PermissionForm.handleSubmit(onSubmit)}
+                  className="flex flex-col w-full lg:px-5 gap-2"
                 >
-                  {loading ? "loading.." : "Create Permission"}
-                </Button>
-              </form>
-            </Form>
-          ) : (
-            <Form {...PermissionUpdateForm}>
-              <form
-                onSubmit={PermissionUpdateForm.handleSubmit(onSubmitUpdate)}
-                className="flex flex-col w-full lg:px-5 gap-2"
-              >
-                <FormField
-                  control={PermissionUpdateForm.control}
-                  name="name"
-                  render={({ }) => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Name Update</FormLabel>
-
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <Input
-                          placeholder="Permission Name"
-                          defaultValue={PermissionUpdateForm.getValues("name")}
-                          onChange={(e) => {
-                            PermissionUpdateForm.setValue(
-                              "name",
-                              e.target.value
-                            );
-                          }}
-                        />
-                      </FormControl>
-
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex flex-row gap-2">
+                  <FormField
+                    control={PermissionForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Name</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <Input placeholder="Permission Name" {...field} />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button
                     type="submit"
-                    className="rounded-md pt-15 w-[80%]"
+                    className="w-full rounded-md pt-15 "
                     disabled={loading}
                   >
-                    {loading ? "loading.." : "Update Permission"}
+                    {loading ? "loading.." : "Create Permission"}
                   </Button>
-                  <Button
-                    onClick={() => setPermissionUpdate(false)}
-                    className="rounded-md pt-15 w-[30%]"
-                    disabled={loading}
-                  >
-                    {loading ? "loading.." : "Cancel"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          )}
-        </div>
-        <div className="flex flex-col lg:max-w-[50%] w-full gap-4">
-          <div className="flex flex-col bg-card rounded-md mt-5 justify-center items-center size-full">
-            <p className="flex truncate max-w-[30%]">
-              {PermissionUpdate != true
-                ? PermissionForm.getValues("name")
-                : PermissionUpdateForm.getValues("name")}
-            </p>
-          </div>
-        </div>
+                </form>
+              </Form>
+              <div className="flex flex-col mt-5 justify-center bg-card rounded-md items-center w-full">
+                <p className="flex truncate max-w-[30%]">
+                  {PermissionForm.getValues("name")}
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="update">
+            <div className="flex size-full">
+              <Form {...PermissionUpdateForm}>
+                <form
+                  onSubmit={PermissionUpdateForm.handleSubmit(onSubmitUpdate)}
+                  className="flex flex-col w-full lg:px-5 gap-2"
+                >
+                  <FormField
+                    control={PermissionUpdateForm.control}
+                    name="name"
+                    render={({}) => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Name Update</FormLabel>
+
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <Input
+                            placeholder="Permission Name"
+                            disabled={!PermissionUpdate}
+                            defaultValue={PermissionUpdateForm.getValues(
+                              "name"
+                            )}
+                            onChange={(e) => {
+                              PermissionUpdateForm.setValue(
+                                "name",
+                                e.target.value
+                              );
+                            }}
+                          />
+                        </FormControl>
+
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex flex-row gap-2">
+                    <Button
+                      type="submit"
+                      className="rounded-md pt-15 w-[80%]"
+                      disabled={loading || PermissionUpdate == false}
+                    >
+                      {loading ? "loading.." : "Update Permission"}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setPermissionUpdate(false)
+                        setTab("create")
+                        PermissionUpdateForm.setValue("name","")
+                      }}
+                      className="rounded-md pt-15 w-[30%]"
+                      disabled={loading}
+                    >
+                      {loading ? "loading.." : "Cancel"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+              <div className="flex flex-col mt-5 justify-center bg-card rounded-md items-center w-full">
+                <p className="flex truncate max-w-[30%]">
+                  {PermissionForm.getValues("name")}
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
       <DataTable data={permissions} searchBy="name" columns={columns} />
     </>

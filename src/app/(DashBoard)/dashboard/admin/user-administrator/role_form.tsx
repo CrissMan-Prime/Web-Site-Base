@@ -42,13 +42,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent} from "@/components/ui/tabs";
 
 export default function Role_Form() {
   const [loading, setLoading] = useState(false);
-  const [RoleUpdate, setRoleUpdate] = useState(false);
+  const [roleUpdate, setRoleUpdate] = useState(false);
   const [color, setColor] = useColor("#2fb95d");
   const [role, setRole] = useState<RoleType[]>([]);
   const [permissions, setPermission] = useState<PermissionType[]>([]);
+  const [tab, setTab] = useState("create");
 
   const RoleForm = useForm<z.infer<typeof RoleSchema>>({
     resolver: zodResolver(RoleSchema),
@@ -79,6 +81,10 @@ export default function Role_Form() {
 
       setLoading(false);
       setRoleUpdate(false);
+      setTab("create");
+      RoleUpdateForm.setValue("name", "");
+      RoleUpdateForm.setValue("uuid", "");
+      RoleUpdateForm.setValue("permission", [""]);
       toast.success("Success", {
         description: `${message}`,
       });
@@ -311,16 +317,18 @@ export default function Role_Form() {
                 >
                   Delete Permission
                 </DropdownMenuItem>
-                {RoleUpdate === false ? (
+                {roleUpdate === false ? (
                   <DropdownMenuItem
                     onClick={() => {
                       setRoleUpdate(true);
+                      setTab("update");
                       setColor((prev) => ({
                         ...prev,
                         hex: row.getValue("color"),
                       }));
                       RoleUpdateForm.setValue("name", row.getValue("name"));
                       RoleUpdateForm.setValue("uuid", row.getValue("uuid"));
+                      RoleUpdateForm.setValue("permission", row.getValue("permission"));
                     }}
                   >
                     Update Permission
@@ -335,204 +343,227 @@ export default function Role_Form() {
   ];
   return (
     <>
-      <div className="flex md:flex-row flex-col w-full">
-        <div className="flex flex-col w-full lg:w-[50%] lg:max-w-[50%] justify-start pt-5 items-center">
-          {RoleUpdate == false ? (
-            <Form {...RoleForm}>
-              <form
-                onSubmit={RoleForm.handleSubmit(onSubmit)}
-                className="flex flex-col w-full lg:px-5 gap-2"
-              >
-                <FormField
-                  control={RoleForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <Input placeholder="Role Name" {...field} />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={RoleForm.control}
-                  name="color"
-                  render={() => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Color</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <Popover>
-                          <PopoverTrigger
-                            className={`flex border-[1px] p-2 rounded-lg`}
-                            style={{ backgroundColor: color.hex }}
-                          >
-                            {color.hex}
-                          </PopoverTrigger>
-                          <PopoverContent className="bg-zinc-900 w-full">
-                            <ColorPicker
-                              hideInput={["rgb", "hsv"]}
-                              color={color}
-                              onChange={(color) => {
-                                setColor(color);
-                              }}
-                              onChangeComplete={(e) => {
-                                RoleForm.setValue("color", e.hex);
-                              }}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={RoleForm.control}
-                  name="permission"
-                  render={() => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Permission</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <MultiSelect
-                          onValueChange={(e) => {
-                            RoleForm.setValue("permission", e);
-                          }}
-                          options={permissions}
-                          placeholder="Select Permission"
-                          className="w-full md:w-20rem p-1 pl-2 rounded-md border "
-                        />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="w-full rounded-md pt-15 "
-                  disabled={loading}
+      <div className="flex md:flex-row flex-col">
+        <Tabs value={tab} onValueChange={setTab} className="size-full">
+
+          <TabsContent value="create">
+            <div className="flex size-full">
+              <Form {...RoleForm}>
+                <form
+                  onSubmit={RoleForm.handleSubmit(onSubmit)}
+                  className="flex flex-col w-full lg:px-5 gap-2"
                 >
-                  {loading ? "loading.." : "Create Role"}
-                </Button>
-              </form>
-            </Form>
-          ) : (
-            <Form {...RoleUpdateForm}>
-              <form
-                onSubmit={RoleUpdateForm.handleSubmit(onSubmitUpdate)}
-                className="flex flex-col w-full lg:px-5 gap-2"
-              >
-                <FormField
-                  control={RoleUpdateForm.control}
-                  name="name"
-                  render={({}) => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <Input
-                          placeholder="Role Name"
-                          defaultValue={RoleUpdateForm.getValues("name")}
-                          onChange={(e) => {
-                            RoleUpdateForm.setValue("name", e.target.value);
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={RoleUpdateForm.control}
-                  name="color"
-                  render={() => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Color</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <Popover>
-                          <PopoverTrigger
-                            className={`flex border-[1px] p-2 rounded-lg`}
-                            style={{ backgroundColor: color.hex }}
-                          >
-                            {color.hex}
-                          </PopoverTrigger>
-                          <PopoverContent className="bg-zinc-900 w-full">
-                            <ColorPicker
-                              hideInput={["rgb", "hsv"]}
-                              color={color}
-                              onChange={(color) => {
-                                setColor(color);
-                              }}
-                              onChangeComplete={(e) => {
-                                RoleUpdateForm.setValue("color", e.hex);
-                              }}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={RoleUpdateForm.control}
-                  name="permission"
-                  render={() => (
-                    <FormItem className="flex flex-col basis-3 w-full justify-center">
-                      <FormLabel>Permission</FormLabel>
-                      <FormControl className="flex items-center w-full rounded-md">
-                        <MultiSelect
-                          onValueChange={(e) => {
-                            RoleUpdateForm.setValue("permission", e);
-                          }}
-                          options={permissions}
-                          defaultValue={RoleUpdateForm.getValues("permission")}
-                          placeholder="Select Permission"
-                          className="w-full md:w-20rem p-1 pl-2 rounded-md"
-                        />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex flex-row gap-2">
+                  <FormField
+                    control={RoleForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Name</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <Input placeholder="Role Name" {...field} />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={RoleForm.control}
+                    name="color"
+                    render={() => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Color</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <Popover>
+                            <PopoverTrigger
+                              className={`flex border-[1px] p-2 rounded-lg`}
+                              style={{ backgroundColor: color.hex }}
+                            >
+                              {color.hex}
+                            </PopoverTrigger>
+                            <PopoverContent className="bg-zinc-900 w-full">
+                              <ColorPicker
+                                hideInput={["rgb", "hsv"]}
+                                color={color}
+                                onChange={(color) => {
+                                  setColor(color);
+                                }}
+                                onChangeComplete={(e) => {
+                                  RoleForm.setValue("color", e.hex);
+                                }}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={RoleForm.control}
+                    name="permission"
+                    render={() => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Permission</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <MultiSelect
+                            onValueChange={(e) => {
+                              RoleForm.setValue("permission", e);
+                            }}
+                            options={permissions}
+                            placeholder="Select Permission"
+                            className="w-full md:w-20rem p-1 pl-2 rounded-md border "
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button
                     type="submit"
-                    className="rounded-md pt-15 w-[80%]"
+                    className="w-full rounded-md pt-15 "
                     disabled={loading}
                   >
-                    {loading ? "loading.." : "Update Role"}
+                    {loading ? "loading.." : "Create Role"}
                   </Button>
-                  <Button
-                    onClick={() => setRoleUpdate(false)}
-                    className="rounded-md pt-15 w-[30%]"
-                    disabled={loading}
-                  >
-                    {loading ? "loading.." : "Cancel"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          )}
-        </div>
-        <div className="flex flex-col lg:max-w-[50%] w-full gap-4">
-          <div className="flex flex-col size-full bg-card rounded-md mt-5 justify-center items-center">
-            <p
-              className="flex p-1 rounded-md"
-              style={{ backgroundColor: color.hex }}
-            >
-              {RoleUpdate != true
-                ? RoleForm.getValues("name")
-                : RoleUpdateForm.getValues("name")}
-            </p>
-          </div>
-        </div>
+                </form>
+              </Form>
+              <div className="flex flex-col mt-5 justify-center bg-card rounded-md items-center w-full">
+                <p
+                  className="flex p-1 rounded-md"
+                  style={{ backgroundColor: color.hex }}
+                >
+                  {RoleForm.getValues("name")}
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="update">
+            <div className="flex size-full">
+              <Form {...RoleUpdateForm}>
+                <form
+                  onSubmit={RoleUpdateForm.handleSubmit(onSubmitUpdate)}
+                  className="flex flex-col w-full lg:px-5 gap-2"
+                >
+                  <FormField
+                    control={RoleUpdateForm.control}
+                    name="name"
+                    render={({}) => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Name</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <Input
+                            placeholder="Role Name"
+                            disabled={roleUpdate == false}
+                            defaultValue={RoleUpdateForm.getValues("name")}
+                            onChange={(e) => {
+                              RoleUpdateForm.setValue("name", e.target.value);
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={RoleUpdateForm.control}
+                    name="color"
+                    render={() => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Color</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <Popover>
+                            <PopoverTrigger
+                              className={`flex border-[1px] p-2 rounded-lg`}
+                              style={{ backgroundColor: color.hex }}
+                            >
+                              {color.hex}
+                            </PopoverTrigger>
+                            <PopoverContent className="bg-zinc-900 w-full">
+                              <ColorPicker
+                                hideInput={["rgb", "hsv"]}
+                                color={color}
+                                disabled={roleUpdate == false}
+                                onChange={(color) => {
+                                  setColor(color);
+                                }}
+                                onChangeComplete={(e) => {
+                                  RoleUpdateForm.setValue("color", e.hex);
+                                }}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={RoleUpdateForm.control}
+                    name="permission"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col basis-3 w-full justify-center">
+                        <FormLabel>Permission</FormLabel>
+                        <FormControl className="flex items-center w-full rounded-md">
+                          <MultiSelect
+                            onValueChange={(e) => {
+                              RoleUpdateForm.setValue("permission", e);
+                            }}
+                            disabled={roleUpdate == false}
+                            options={permissions}
+                            defaultValue={field.value}
+                            placeholder="Select Permission"
+                            className="w-full md:w-20rem p-1 pl-2 rounded-md"
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex flex-row gap-2">
+                    <Button
+                      type="submit"
+                      className="rounded-md pt-15 w-[80%]"
+                      disabled={loading || roleUpdate == false}
+                    >
+                      {loading ? "loading.." : "Update Role"}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setRoleUpdate(false);
+                        setTab("create");
+                        RoleUpdateForm.setValue("name", "");
+                        RoleUpdateForm.setValue("uuid", "");
+                        RoleUpdateForm.setValue("permission", [""]);
+                        setColor((prev) => ({
+                        ...prev,
+                        hex: "#2fb95d",
+                      }));
+                      }}
+                      className="rounded-md pt-15 w-[30%]"
+                      disabled={loading}
+                    >
+                      {loading ? "loading.." : "Cancel"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+              <div className="flex flex-col mt-5 justify-center bg-card rounded-md items-center w-full">
+                <p
+                  className="flex p-1 rounded-md"
+                  style={{ backgroundColor: color.hex }}
+                >
+                  {RoleUpdateForm.getValues("name")}
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
       <DataTable data={role} searchBy="name" columns={columns} />
     </>

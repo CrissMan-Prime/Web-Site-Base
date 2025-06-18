@@ -141,6 +141,12 @@ export async function DELETE(req: NextRequest) {
                 { status: 400 }
             )
         };
+        if (uuidExist.name == "Owner" || "User") {
+             return NextResponse.json(
+                { message: "You cannot delete a essential role" },
+                { status: 400 }
+            )
+        }
         const api_data = await prisma.role.delete({
             where: {
                 uuid: data

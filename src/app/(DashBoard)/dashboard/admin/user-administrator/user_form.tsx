@@ -40,10 +40,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 export default function User_Form() {
   const [loading, setLoading] = useState(false);
   const [UserUpdate, setUserUpdate] = useState(false);
+  const [tab, setTab] = useState("create");
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const [user, setUser] = useState<UserType[]>([]);
   const [role, setRole] = useState<RoleType[]>([]);
@@ -73,11 +75,18 @@ export default function User_Form() {
         return null;
       }
 
-      setLoading(false);
-      setUserUpdate(false);
       toast.success("Success", {
         description: `${message}`,
       });
+      setLoading(false);
+      setUserUpdate(false);
+      setTab("create");
+      UserUpdateForm.setValue("name", "");
+      UserUpdateForm.setValue("uuid", "");
+      UserUpdateForm.setValue("firstName", "");
+      UserUpdateForm.setValue("email", "");
+      UserUpdateForm.setValue("role", "");
+      UserUpdateForm.setValue("password", "");
     } catch (err) {
       setLoading(false);
       toast.error("Internal Error", {
@@ -333,6 +342,7 @@ export default function User_Form() {
                   <DropdownMenuItem
                     onClick={() => {
                       setUserUpdate(true);
+                      setTab("update");
                       UserUpdateForm.setValue("name", row.getValue("name"));
                       UserUpdateForm.setValue("uuid", row.getValue("uuid"));
                       UserUpdateForm.setValue(
@@ -354,327 +364,346 @@ export default function User_Form() {
     },
   ];
 
-  console.log(UserUpdateForm.getValues());
-
   return (
     <>
-      <div className="flex md:flex-row flex-col w-full">
-        <div className="flex flex-col w-full lg:w-[50%] lg:max-w-[50%] justify-start pt-5 items-center">
-          {UserUpdate == false ? (
-            <Form {...UserForm}>
-              <form
-                onSubmit={UserForm.handleSubmit(onSubmit)}
-                className="flex flex-col w-full lg:px-5 gap-2"
-              >
-                <div className="flex flex-row w-full gap-2">
-                  <FormField
-                    control={UserForm.control}
-                    name="firstName"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Input
-                            placeholder="First Name"
-                            onChange={(e) => {
-                              UserForm.setValue("firstName", e.target.value);
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={UserForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Input placeholder="Last Name" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row w-full gap-2">
-                  <FormField
-                    control={UserForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Email</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Input placeholder="Email" type="email" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={UserForm.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Role</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {role.map((role, index) => (
-                                <SelectItem key={index} value={role.name}>
-                                  {role.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row gap-2">
-                  <FormField
-                    control={UserForm.control}
-                    name="password"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Password </FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <div className="bg-input">
-                            <Input
-                              onChange={(e) => {
-                                UserForm.setValue("password", e.target.value);
-                              }}
-                              type={passwordVisibility ? "text" : "password"}
-                            />
-                            <Button
-                              variant={"ghost"}
-                              type="button"
-                              className="flex items-center  text-muted-foreground"
-                              onClick={() =>
-                                setPasswordVisibility(!passwordVisibility)
-                              }
-                            >
-                              {passwordVisibility ? (
-                                <EyeOffIcon />
-                              ) : (
-                                <EyeIcon />
-                              )}
-                            </Button>
-                          </div>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="rounded-md pt-15"
-                  disabled={loading}
+      <div className="flex md:flex-row flex-col">
+        <Tabs value={tab} onValueChange={setTab} className="size-full">
+          <TabsContent value="create">
+            <div className="flex size-full">
+              <Form {...UserForm}>
+                <form
+                  onSubmit={UserForm.handleSubmit(onSubmit)}
+                  className="flex flex-col w-full lg:px-5 gap-2"
                 >
-                  {loading ? "loading.." : "Create User"}
-                </Button>
-              </form>
-            </Form>
-          ) : (
-            <Form {...UserUpdateForm}>
-              <form
-                onSubmit={UserUpdateForm.handleSubmit(onSubmitUpdate)}
-                className="flex flex-col w-full lg:px-5 gap-2"
-              >
-                <div className="flex flex-row w-full gap-2">
-                  <FormField
-                    control={UserUpdateForm.control}
-                    name="firstName"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Input
-                            placeholder="First Name"
-                            defaultValue={UserUpdateForm.getValues("firstName")}
-                            onChange={(e) => {
-                              UserUpdateForm.setValue(
-                                "firstName",
-                                e.target.value
-                              );
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={UserUpdateForm.control}
-                    name="name"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Input
-                            placeholder="Name"
-                            defaultValue={UserUpdateForm.getValues("name")}
-                            onChange={(e) => {
-                              UserUpdateForm.setValue("name", e.target.value);
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row w-full gap-2">
-                  <FormField
-                    control={UserUpdateForm.control}
-                    name="email"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Email</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Input
-                            placeholder="Email"
-                            type="email"
-                            onChange={(e) => {
-                              UserUpdateForm.setValue("email", e.target.value);
-                            }}
-                            defaultValue={UserUpdateForm.getValues("email")}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={UserUpdateForm.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Role</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {role.map((role, index) => (
-                                <SelectItem key={index} value={role.name}>
-                                  {role.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row gap-2">
-                  <FormField
-                    control={UserUpdateForm.control}
-                    name="password"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Password</FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <div className="bg-input">
+                  <div className="flex flex-row w-full gap-2">
+                    <FormField
+                      control={UserForm.control}
+                      name="firstName"
+                      render={({}) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>First Name</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
                             <Input
+                              placeholder="First Name"
+                              onChange={(e) => {
+                                UserForm.setValue("firstName", e.target.value);
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={UserForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Input placeholder="Last Name" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-row w-full gap-2">
+                    <FormField
+                      control={UserForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Email</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Input
+                              placeholder="Email"
+                              type="email"
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={UserForm.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Role</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {role.map((role, index) => (
+                                  <SelectItem key={index} value={role.name}>
+                                    {role.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <FormField
+                      control={UserForm.control}
+                      name="password"
+                      render={({}) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Password </FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <div className="bg-input">
+                              <Input
+                                onChange={(e) => {
+                                  UserForm.setValue("password", e.target.value);
+                                }}
+                                type={passwordVisibility ? "text" : "password"}
+                              />
+                              <Button
+                                variant={"ghost"}
+                                type="button"
+                                className="flex items-center  text-muted-foreground"
+                                onClick={() =>
+                                  setPasswordVisibility(!passwordVisibility)
+                                }
+                              >
+                                {passwordVisibility ? (
+                                  <EyeOffIcon />
+                                ) : (
+                                  <EyeIcon />
+                                )}
+                              </Button>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="rounded-md pt-15"
+                    disabled={loading}
+                  >
+                    {loading ? "loading.." : "Create User"}
+                  </Button>
+                </form>
+              </Form>
+              <div className="flex flex-row mt-5 justify-center bg-card rounded-md items-center w-full">
+                <Avatar>
+                  <AvatarFallback>TA</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <p className="flex flex-col p-1 rounded-md">
+                    <p>
+                      {UserForm.getValues("firstName")}{" "}
+                      {UserForm.getValues("name")}
+                    </p>
+                  </p>
+                  <p className="flex flex-col p-1 rounded-md">
+                    {UserForm.getValues("email")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="update">
+            <div className="flex size-full">
+              <Form {...UserUpdateForm}>
+                <form
+                  onSubmit={UserUpdateForm.handleSubmit(onSubmitUpdate)}
+                  className="flex flex-col w-full lg:px-5 gap-2"
+                >
+                  <div className="flex flex-row w-full gap-2">
+                    <FormField
+                      control={UserUpdateForm.control}
+                      name="firstName"
+                      render={({}) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>First Name</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Input
+                              placeholder="First Name"
+                              disabled={UserUpdate == false}
+                              defaultValue={UserUpdateForm.getValues(
+                                "firstName"
+                              )}
                               onChange={(e) => {
                                 UserUpdateForm.setValue(
-                                  "password",
+                                  "firstName",
                                   e.target.value
                                 );
                               }}
-                              type={passwordVisibility ? "text" : "password"}
                             />
-                            <Button
-                              variant={"ghost"}
-                              type="button"
-                              className="flex items-center text-muted-foreground"
-                              onClick={() =>
-                                setPasswordVisibility(!passwordVisibility)
-                              }
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={UserUpdateForm.control}
+                      name="name"
+                      render={({}) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Input
+                              placeholder="Name"
+                              disabled={UserUpdate == false}
+                              defaultValue={UserUpdateForm.getValues("name")}
+                              onChange={(e) => {
+                                UserUpdateForm.setValue("name", e.target.value);
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-row w-full gap-2">
+                    <FormField
+                      control={UserUpdateForm.control}
+                      name="email"
+                      render={({}) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Email</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Input
+                              placeholder="Email"
+                              disabled={UserUpdate == false}
+                              type="email"
+                              onChange={(e) => {
+                                UserUpdateForm.setValue(
+                                  "email",
+                                  e.target.value
+                                );
+                              }}
+                              defaultValue={UserUpdateForm.getValues("email")}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={UserUpdateForm.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Role</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={UserUpdate == false}
                             >
-                              {passwordVisibility ? (
-                                <EyeOffIcon />
-                              ) : (
-                                <EyeIcon />
-                              )}
-                            </Button>
-                          </div>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row gap-2">
-                  <Button
-                    type="submit"
-                    className="rounded-md pt-15 w-[80%]"
-                    disabled={loading}
-                  >
-                    {loading ? "loading.." : "Update User"}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setUserUpdate(false);
-                      UserUpdateForm.setValue("name", "");
-                      UserUpdateForm.setValue("uuid", "");
-                      UserUpdateForm.setValue("firstName", "");
-                      UserUpdateForm.setValue("email", "");
-                      UserUpdateForm.setValue("role", "");
-                      UserUpdateForm.setValue("password", "");
-                      UserForm.setValue("name", "");
-                      UserForm.setValue("firstName", "");
-                      UserForm.setValue("email", "");
-                      UserForm.setValue("role", "");
-                    }}
-                    className="rounded-md pt-15 w-[30%]"
-                    disabled={loading}
-                  >
-                    {loading ? "loading.." : "Cancel"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          )}
-        </div>
-        <div className="flex flex-col lg:max-w-[50%] w-full gap-4">
-          <div className="flex h-full bg-card rounded-md mt-5 justify-center items-center w-full">
-            <Avatar>
-              <AvatarFallback>TA</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <p className="flex flex-col p-1 rounded-md">
-                {UserUpdate != true ? (
-                  <p>
-                    {UserForm.getValues("firstName")}{" "}
-                    {UserForm.getValues("name")}
+                              <SelectTrigger className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {role.map((role, index) => (
+                                  <SelectItem key={index} value={role.name}>
+                                    {role.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <FormField
+                      control={UserUpdateForm.control}
+                      name="password"
+                      render={({}) => (
+                        <FormItem className="flex flex-col w-full justify-center">
+                          <FormLabel>Password</FormLabel>
+                          <FormControl className="flex items-center w-full rounded-md">
+                            <div className="bg-input">
+                              <Input
+                                onChange={(e) => {
+                                  UserUpdateForm.setValue(
+                                    "password",
+                                    e.target.value
+                                  );
+                                }}
+                                disabled={UserUpdate == false}
+                                type={passwordVisibility ? "text" : "password"}
+                              />
+                              <Button
+                                variant={"ghost"}
+                                type="button"
+                                className="flex items-center text-muted-foreground"
+                                onClick={() =>
+                                  setPasswordVisibility(!passwordVisibility)
+                                }
+                              >
+                                {passwordVisibility ? (
+                                  <EyeOffIcon />
+                                ) : (
+                                  <EyeIcon />
+                                )}
+                              </Button>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <Button
+                      type="submit"
+                      className="rounded-md pt-15 w-[80%]"
+                      disabled={loading || UserUpdate == false}
+                    >
+                      {loading ? "loading.." : "Update User"}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setUserUpdate(false);
+                        setTab("create");
+                        UserUpdateForm.setValue("name", "");
+                        UserUpdateForm.setValue("uuid", "");
+                        UserUpdateForm.setValue("firstName", "");
+                        UserUpdateForm.setValue("email", "");
+                        UserUpdateForm.setValue("role", "");
+                        UserUpdateForm.setValue("password", "");
+                      }}
+                      className="rounded-md pt-15 w-[30%]"
+                      type="button"
+                      disabled={loading}
+                    >
+                      {loading ? "loading.." : "Cancel"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+              <div className="flex flex-row mt-5 justify-center bg-card rounded-md items-center w-full">
+                <Avatar>
+                  <AvatarFallback>TA</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <p className="flex flex-col p-1 rounded-md">
+                    <p>
+                      {UserUpdateForm.getValues("firstName")}{" "}
+                      {UserUpdateForm.getValues("name")}
+                    </p>
                   </p>
-                ) : (
-                  <p>
-                    {UserUpdateForm.getValues("firstName")}{" "}
-                    {UserUpdateForm.getValues("name")}
+                  <p className="flex flex-col p-1 rounded-md">
+                    {UserUpdateForm.getValues("email")}
                   </p>
-                )}
-              </p>
-              <p className="flex flex-col p-1 rounded-md">
-                {UserUpdate != true
-                  ? UserForm.getValues("email")
-                  : UserUpdateForm.getValues("email")}
-              </p>
-              <p className="flex truncate max-w-[30%] sm:hidden lg:block"></p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
-      <DataTable data={user} searchBy={"email"} columns={columns} />
+      <DataTable data={user} searchBy="email" columns={columns} />
     </>
   );
 }

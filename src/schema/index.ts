@@ -97,6 +97,16 @@ export const PermissionSchema = z.object({
         }),
 })
 
+export const TestSchema = z.object({
+    image: z.any()
+        .refine((file) => {
+            const f = file instanceof File ? file : file?.[0];
+            return f && ["image/jpeg", "image/png", "image/webp"].includes(f.type);
+        }, {
+            message: "Image must be JPG, PNG, or WEBP",
+        }),
+})
+
 export const PermissionUpdateSchema = z.object({
     uuid: z.string(),
     name: z
@@ -146,7 +156,7 @@ export const UpdateUserSchema = z.object({
         }),
     password: z
         .string(),
- 
+
 });
 export const UserSchema = z.object({
     email: z

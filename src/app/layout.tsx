@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "The anime Arch",
+  title: process.env.NEXT_PUBLIC_SITE_NAME,
   description: "",
 };
 
