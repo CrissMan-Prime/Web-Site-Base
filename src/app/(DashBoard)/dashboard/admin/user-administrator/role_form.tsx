@@ -1,5 +1,5 @@
 "use client";
-
+import "react-color-palette/css";
 import {
   Form,
   FormControl,
@@ -10,10 +10,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RoleSchema, RoleUpdateSchema } from "@/schema";
+import { RoleSchema, RoleUpdateSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import "react-color-palette/css";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -42,7 +41,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent} from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 export default function Role_Form() {
   const [loading, setLoading] = useState(false);
@@ -55,6 +54,7 @@ export default function Role_Form() {
   const RoleForm = useForm<z.infer<typeof RoleSchema>>({
     resolver: zodResolver(RoleSchema),
   });
+
   const RoleUpdateForm = useForm<z.infer<typeof RoleUpdateSchema>>({
     resolver: zodResolver(RoleUpdateSchema),
     defaultValues: {
@@ -62,7 +62,7 @@ export default function Role_Form() {
     },
   });
 
-  const onSubmitUpdate = async (data: z.infer<typeof RoleSchema>) => {
+  const onSubmitUpdate = async (data: z.infer<typeof RoleUpdateSchema>) => {
     setLoading(true);
     try {
       const response = await fetch("/api/role", {
@@ -159,6 +159,7 @@ export default function Role_Form() {
     const data = await res.json();
     setPermission(data.message);
   }
+
   async function fetchRole() {
     const res = await fetch("/api/role");
     const data = await res.json();
@@ -282,7 +283,7 @@ export default function Role_Form() {
     },
     {
       accessorKey: "menu",
-      header: () => <p></p>,
+      header: () => null,
       cell: ({ row }) => {
         return (
           <div
@@ -328,7 +329,10 @@ export default function Role_Form() {
                       }));
                       RoleUpdateForm.setValue("name", row.getValue("name"));
                       RoleUpdateForm.setValue("uuid", row.getValue("uuid"));
-                      RoleUpdateForm.setValue("permission", row.getValue("permission"));
+                      RoleUpdateForm.setValue(
+                        "permission",
+                        row.getValue("permission"),
+                      );
                     }}
                   >
                     Update Permission
@@ -341,13 +345,13 @@ export default function Role_Form() {
       },
     },
   ];
+
   return (
     <>
       <div className="flex md:flex-row flex-col">
         <Tabs value={tab} onValueChange={setTab} className="size-full">
-
           <TabsContent value="create">
-            <div className="flex size-full">
+            <div className="flex size-full lg:flex-row xs:flex-col">
               <Form {...RoleForm}>
                 <form
                   onSubmit={RoleForm.handleSubmit(onSubmit)}
@@ -441,7 +445,7 @@ export default function Role_Form() {
             </div>
           </TabsContent>
           <TabsContent value="update">
-            <div className="flex size-full">
+            <div className="flex size-full lg:flex-row xs:flex-col">
               <Form {...RoleUpdateForm}>
                 <form
                   onSubmit={RoleUpdateForm.handleSubmit(onSubmitUpdate)}
@@ -541,9 +545,9 @@ export default function Role_Form() {
                         RoleUpdateForm.setValue("uuid", "");
                         RoleUpdateForm.setValue("permission", [""]);
                         setColor((prev) => ({
-                        ...prev,
-                        hex: "#2fb95d",
-                      }));
+                          ...prev,
+                          hex: "#2fb95d",
+                        }));
                       }}
                       className="rounded-md pt-15 w-[30%]"
                       disabled={loading}

@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { LoginSchema } from "@/schema";
+import { LoginSchema } from "@/lib/schema";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";

@@ -2,34 +2,12 @@
 
 import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AiOutlineLoading } from "react-icons/ai";
 import { Button } from "./button";
 
 export default function Sidebar_Profile() {
-  const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 
-  function Timeout() {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  }
-
-  useEffect(() => {
-    Timeout();
-  }, []);
-
-  if (loading) {
-    return (
-      <main className="w-full h-full">
-        <div className="flex size-full pb-10 justify-center items-center">
-          <AiOutlineLoading className="flex animate-spin" size={30} />
-        </div>
-      </main>
-    );
-  }
   if (!session) {
     return (
       <div className="flex">

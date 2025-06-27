@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PermissionSchema, PermissionUpdateSchema } from "@/schema";
+import { PermissionSchema, PermissionUpdateSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import "react-color-palette/css";
@@ -34,13 +34,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { Tabs, TabsContent} from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 export default function Permission_Form() {
   const [loading, setLoading] = useState(false);
   const [PermissionUpdate, setPermissionUpdate] = useState(false);
   const [permissions, setPermission] = useState<PermissionType[]>([]);
-  const [tab, setTab] = useState("create")
+  const [tab, setTab] = useState("create");
 
   const PermissionForm = useForm<z.infer<typeof PermissionSchema>>({
     resolver: zodResolver(PermissionSchema),
@@ -51,7 +51,7 @@ export default function Permission_Form() {
   });
 
   const onSubmitUpdate = async (
-    data: z.infer<typeof PermissionUpdateSchema>
+    data: z.infer<typeof PermissionUpdateSchema>,
   ) => {
     try {
       const response = await fetch("/api/permission", {
@@ -69,8 +69,8 @@ export default function Permission_Form() {
       }
 
       setLoading(false);
-      setTab("create")
-      PermissionUpdateForm.setValue("name","")
+      setTab("create");
+      PermissionUpdateForm.setValue("name", "");
       toast.success("Success", {
         description: `${message}`,
       });
@@ -215,7 +215,7 @@ export default function Permission_Form() {
     },
     {
       accessorKey: "menu",
-      header: () => <p></p>,
+      header: () => null,
       cell: ({ row }) => {
         return (
           <div
@@ -254,15 +254,14 @@ export default function Permission_Form() {
                   <DropdownMenuItem
                     onClick={() => {
                       setPermissionUpdate(true);
-                      setTab("update")
-                      console.log(PermissionUpdateForm.getValues());
+                      setTab("update");
                       PermissionUpdateForm.setValue(
                         "uuid",
-                        row.getValue("uuid")
+                        row.getValue("uuid"),
                       );
                       PermissionUpdateForm.setValue(
                         "name",
-                        row.getValue("name")
+                        row.getValue("name"),
                       );
                     }}
                   >
@@ -282,7 +281,7 @@ export default function Permission_Form() {
       <div className="flex md:flex-row flex-col">
         <Tabs value={tab} onValueChange={setTab} className="size-full">
           <TabsContent value="create">
-            <div className="flex size-full">
+            <div className="flex w-full lg:flex-row flex-col">
               <Form {...PermissionForm}>
                 <form
                   onSubmit={PermissionForm.handleSubmit(onSubmit)}
@@ -319,7 +318,7 @@ export default function Permission_Form() {
             </div>
           </TabsContent>
           <TabsContent value="update">
-            <div className="flex size-full">
+            <div className="flex size-full lg:flex-row sm:flex-col">
               <Form {...PermissionUpdateForm}>
                 <form
                   onSubmit={PermissionUpdateForm.handleSubmit(onSubmitUpdate)}
@@ -337,12 +336,12 @@ export default function Permission_Form() {
                             placeholder="Permission Name"
                             disabled={!PermissionUpdate}
                             defaultValue={PermissionUpdateForm.getValues(
-                              "name"
+                              "name",
                             )}
                             onChange={(e) => {
                               PermissionUpdateForm.setValue(
                                 "name",
-                                e.target.value
+                                e.target.value,
                               );
                             }}
                           />
@@ -364,9 +363,9 @@ export default function Permission_Form() {
                     </Button>
                     <Button
                       onClick={() => {
-                        setPermissionUpdate(false)
-                        setTab("create")
-                        PermissionUpdateForm.setValue("name","")
+                        setPermissionUpdate(false);
+                        setTab("create");
+                        PermissionUpdateForm.setValue("name", "");
                       }}
                       className="rounded-md pt-15 w-[30%]"
                       disabled={loading}

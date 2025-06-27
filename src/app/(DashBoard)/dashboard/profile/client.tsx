@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
 import User_Form from "./user_form";
+import Image_Form from "./profile_form";
+import Loading from "@/components/ui/loading";
 
 export default function Client() {
   const [loading, setLoading] = useState(true);
@@ -18,24 +19,19 @@ export default function Client() {
   }, []);
 
   if (loading) {
-    return (
-      <main className="w-full h-full">
-        <div className="flex size-full justify-center items-center">
-          <AiOutlineLoading className="flex animate-spin" size={50} />
-        </div>
-      </main>
-    );
+    return <Loading />;
   }
 
   return (
-    <main className="flex flex-col size-full px-20 pt-10">
+    <main className="flex flex-col size-full lg:px-20 px-6 lg:pt-10">
       <p className="text-xl font-bold">Profile</p>
       <p className="pb-2">
         Welcome to your profile page. Here, you can view and update your account
         information.
       </p>
       <hr />
-      <User_Form/>
+      <Image_Form />
+      <User_Form />
     </main>
   );
 }

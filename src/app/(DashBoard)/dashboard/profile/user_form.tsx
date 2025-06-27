@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { UpdateUserSchema } from "@/schema";
+import { UpdateUserSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -29,19 +29,16 @@ export default function User_Form() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<RoleType[]>([]);
+
   const UserForm = useForm<z.infer<typeof UpdateUserSchema>>({
     resolver: zodResolver(UpdateUserSchema),
     defaultValues: {
       uuid: session?.user.uuid,
-      email: session?.user.email,
-      name: session?.user.name,
-      firstName: session?.user.firstName,
-      role: session?.user.role,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof UpdateUserSchema>) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch("/api/user", {
         method: "PUT",
@@ -77,15 +74,15 @@ export default function User_Form() {
 
   useEffect(() => {
     fetchRole();
-  }, []);
+  }, [loading]);
 
   return (
-    <div className="flex flex-col w-[60%] justify-start pt-5 items-center">
+    <div className="flex flex-col lg:w-[60%] justify-start pt-5 items-center">
       <div className="flex flex-row w-full">
         <Form {...UserForm}>
           <form
             onSubmit={UserForm.handleSubmit(onSubmit)}
-            className="flex flex-col w-full lg:px-5 gap-2"
+            className="flex flex-col w-full lg:px-5 gap-6"
           >
             <div className="flex flex-row w-full gap-2">
               <FormField
@@ -196,7 +193,7 @@ export default function User_Form() {
             </div>
             <Button
               type="submit"
-              className="rounded-md pt-15 w-[20%]"
+              className="rounded-md mt-4 lg:pt-15 lg:w-[50%]"
               disabled={loading}
             >
               {loading ? "loading.." : "Update User"}

@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { RegisterSchema } from "@/schema";
+import { RegisterSchema } from "@/lib/schema";
 import { toast } from "sonner";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
@@ -134,38 +134,34 @@ export default function Client() {
                   )}
                 />
                 <FormField
-                    control={form.control}
-                    name="password"
-                    render={({}) => (
-                      <FormItem className="flex flex-col w-full justify-center">
-                        <FormLabel>Password </FormLabel>
-                        <FormControl className="flex items-center w-full rounded-md">
-                          <div>
-                            <Input
-                              onChange={(e) => {
-                                form.setValue("password", e.target.value);
-                              }}
-                              type={passwordVisibility ? "text" : "password"}
-                            />
-                            <Button
-                              variant={"ghost"}
-                              type="button"
-                              className="flex items-center  text-muted-foreground"
-                              onClick={() =>
-                                setPasswordVisibility(!passwordVisibility)
-                              }
-                            >
-                              {passwordVisibility ? (
-                                <EyeOffIcon />
-                              ) : (
-                                <EyeIcon />
-                              )}
-                            </Button>
-                          </div>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  control={form.control}
+                  name="password"
+                  render={({}) => (
+                    <FormItem className="flex flex-col w-full justify-center">
+                      <FormLabel>Password </FormLabel>
+                      <FormControl className="flex items-center w-full rounded-md">
+                        <div>
+                          <Input
+                            onChange={(e) => {
+                              form.setValue("password", e.target.value);
+                            }}
+                            type={passwordVisibility ? "text" : "password"}
+                          />
+                          <Button
+                            variant={"ghost"}
+                            type="button"
+                            className="flex items-center  text-muted-foreground"
+                            onClick={() =>
+                              setPasswordVisibility(!passwordVisibility)
+                            }
+                          >
+                            {passwordVisibility ? <EyeOffIcon /> : <EyeIcon />}
+                          </Button>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "loading.." : "Register"}
                 </Button>

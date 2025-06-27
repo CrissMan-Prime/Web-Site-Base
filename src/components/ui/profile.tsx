@@ -8,32 +8,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Bookmark, History, LogOut, Settings } from "lucide-react";
 
 export default function Profile() {
-  const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
-
-  function Timeout() {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  }
-
-  useEffect(() => {
-    Timeout();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className=" flex flex-row justify-end h-[80px] items-center pr-5">
-        <Skeleton className="h-12 w-12 rounded-full" />
-      </div>
-    );
-  }
   if (!session) {
     return (
       <div className="flex">
@@ -58,7 +37,7 @@ export default function Profile() {
         <div className="flex flex-row py-1 p-2">
           {session?.user.image ? (
             <Avatar>
-              <AvatarImage src={session?.user?.image } />
+              <AvatarImage src={session?.user?.image} />
               <AvatarFallback>TA</AvatarFallback>
             </Avatar>
           ) : null}

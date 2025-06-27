@@ -8,6 +8,38 @@ generator client {
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
+model Media {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  uuid String @unique @default(uuid()) @db.String
+  name String @unique
+  link String @unique
+}
+
+model Site_Settings {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  uuid               String   @unique @default(uuid()) @db.String
+  identify           String   @unique @default("Site_Setting")
+  name               String   @unique
+  description        String   @default("")
+  /**
+   * Design
+   */
+  theme              String   @default("")
+  color              String   @default("")
+  favicon            String   @default("")
+  logo               String   @default("")
+  maintenance        Boolean  @default(false)
+  maintenanceMessage String   @default("The site is under maintenance, we will be back in a few moments.")
+  /**
+   * Contact
+   */
+  email              String   @default("")
+  phone              Float    @default(0)
+  address            String   @default("")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
 model User {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   uuid          String          @unique @default(uuid()) @db.String
@@ -27,18 +59,17 @@ model User {
 }
 
 model Role {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  uuid       String     @unique @default(uuid()) @db.String
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  uuid       String  @unique @default(uuid()) @db.String
   color      String?
-  name       String     @unique
+  name       String  @unique
   permission Json?
 }
 
-
 model Permission {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  uuid       String     @unique @default(uuid()) @db.String
-  name       String     @unique
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  uuid String @unique @default(uuid()) @db.String
+  name String @unique
 }
 
 model Account {

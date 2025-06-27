@@ -8,7 +8,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UpdateUserSchema, UserSchema } from "@/schema";
+import { AdminUpdateUserSchema, UserSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import "react-color-palette/css";
@@ -54,14 +54,16 @@ export default function User_Form() {
     resolver: zodResolver(UserSchema),
   });
 
-  const UserUpdateForm = useForm<z.infer<typeof UpdateUserSchema>>({
-    resolver: zodResolver(UpdateUserSchema),
+  const UserUpdateForm = useForm<z.infer<typeof AdminUpdateUserSchema>>({
+    resolver: zodResolver(AdminUpdateUserSchema),
   });
 
-  const onSubmitUpdate = async (data: z.infer<typeof UpdateUserSchema>) => {
+  const onSubmitUpdate = async (
+    data: z.infer<typeof AdminUpdateUserSchema>,
+  ) => {
     setLoading(true);
     try {
-      const response = await fetch("/api/user", {
+      const response = await fetch("/api/admin", {
         method: "PUT",
         body: JSON.stringify(data),
       });
@@ -302,7 +304,7 @@ export default function User_Form() {
     },
     {
       accessorKey: "menu",
-      header: () => <p></p>,
+      header: () => null,
       cell: ({ row }) => {
         return (
           <div
@@ -347,7 +349,7 @@ export default function User_Form() {
                       UserUpdateForm.setValue("uuid", row.getValue("uuid"));
                       UserUpdateForm.setValue(
                         "firstName",
-                        row.getValue("firstName")
+                        row.getValue("firstName"),
                       );
                       UserUpdateForm.setValue("email", row.getValue("email"));
                       UserUpdateForm.setValue("role", row.getValue("role"));
@@ -369,7 +371,7 @@ export default function User_Form() {
       <div className="flex md:flex-row flex-col">
         <Tabs value={tab} onValueChange={setTab} className="size-full">
           <TabsContent value="create">
-            <div className="flex size-full">
+            <div className="flex lg:flex-row xs:flex-col size-full">
               <Form {...UserForm}>
                 <form
                   onSubmit={UserForm.handleSubmit(onSubmit)}
@@ -499,12 +501,12 @@ export default function User_Form() {
                   <AvatarFallback>TA</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <p className="flex flex-col p-1 rounded-md">
+                  <div className="flex flex-col p-1 rounded-md">
                     <p>
                       {UserForm.getValues("firstName")}{" "}
                       {UserForm.getValues("name")}
                     </p>
-                  </p>
+                  </div>
                   <p className="flex flex-col p-1 rounded-md">
                     {UserForm.getValues("email")}
                   </p>
@@ -513,7 +515,7 @@ export default function User_Form() {
             </div>
           </TabsContent>
           <TabsContent value="update">
-            <div className="flex size-full">
+            <div className="flex size-full lg:flex-row xs:flex-col">
               <Form {...UserUpdateForm}>
                 <form
                   onSubmit={UserUpdateForm.handleSubmit(onSubmitUpdate)}
@@ -531,12 +533,12 @@ export default function User_Form() {
                               placeholder="First Name"
                               disabled={UserUpdate == false}
                               defaultValue={UserUpdateForm.getValues(
-                                "firstName"
+                                "firstName",
                               )}
                               onChange={(e) => {
                                 UserUpdateForm.setValue(
                                   "firstName",
-                                  e.target.value
+                                  e.target.value,
                                 );
                               }}
                             />
@@ -579,7 +581,7 @@ export default function User_Form() {
                               onChange={(e) => {
                                 UserUpdateForm.setValue(
                                   "email",
-                                  e.target.value
+                                  e.target.value,
                                 );
                               }}
                               defaultValue={UserUpdateForm.getValues("email")}
@@ -629,7 +631,7 @@ export default function User_Form() {
                                 onChange={(e) => {
                                   UserUpdateForm.setValue(
                                     "password",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }}
                                 disabled={UserUpdate == false}
@@ -688,12 +690,12 @@ export default function User_Form() {
                   <AvatarFallback>TA</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <p className="flex flex-col p-1 rounded-md">
+                  <div className="flex flex-col p-1 rounded-md">
                     <p>
                       {UserUpdateForm.getValues("firstName")}{" "}
                       {UserUpdateForm.getValues("name")}
                     </p>
-                  </p>
+                  </div>
                   <p className="flex flex-col p-1 rounded-md">
                     {UserUpdateForm.getValues("email")}
                   </p>

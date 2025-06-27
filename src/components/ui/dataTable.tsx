@@ -24,10 +24,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface DataTableProps<TData, TValue > {
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchBy:  "email" | "name" | "uuid" 
+  searchBy: "email" | "name" | "uuid";
 }
 
 export function DataTable<TData, TValue>({
@@ -37,7 +37,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -50,7 +50,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: (updater) =>
       setPagination((prev) =>
-        typeof updater === "function" ? updater(prev) : updater
+        typeof updater === "function" ? updater(prev) : updater,
       ),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -64,12 +64,14 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
+    <div className="overflow-auto">
       <div className="flex flex-row basis-1/2 items-center justify-end py-4">
         <div className="flex items-center lg:hidden gap-3 py-4">
           <Input
             placeholder="Search ..."
-            value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn(searchBy)?.getFilterValue() as string) ?? ""
+            }
             onChange={(event) =>
               table.getColumn(searchBy)?.setFilterValue(event.target.value)
             }
@@ -92,7 +94,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -111,7 +113,7 @@ export function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -167,7 +169,7 @@ export function DataTable<TData, TValue>({
             ))}
           </select>
         </div>
-        <div className="lg:block sm:hidden w-full">
+        <div className="lg:block xs:hidden w-full">
           <div className="flex flex-row basis-1/2 gap-2 items-center justify-end py-4">
             <p className="px-2 py-[1px] border-[1px] border-zinc-800 rounded-sm">
               {table.getPageCount()}

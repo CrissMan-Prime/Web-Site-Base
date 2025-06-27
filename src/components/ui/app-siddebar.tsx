@@ -6,11 +6,19 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-  useSidebar
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import { UserCog, UserCircle, History, ListOrdered, Cog, List, ShieldCheck } from 'lucide-react';
+import {
+  UserCog,
+  UserCircle,
+  History,
+  ListOrdered,
+  Cog,
+  List,
+  ShieldCheck,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -19,6 +27,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import Sidebar_Profile from "./sidebar_profile";
+import { useEffect, useState } from "react";
 
 const PageUserList = [
   {
@@ -45,6 +54,7 @@ const DropDownList = [
     category: "admin",
   },
 ];
+
 const DD_Item_List = [
   {
     title: "User Administrator",
@@ -69,23 +79,43 @@ const DD_Item_List = [
 export function AppSidebar() {
   const currentPath = usePathname();
   const { data: session } = useSession();
- const {
-    setOpenMobile,
-  } = useSidebar()
+  const { setOpenMobile } = useSidebar();
+  const [siteData, setSiteData] = useState<SiteSettingsType[]>([]);
+  const [loading, setLoading] = useState(true);
+  async function fetchSiteSettings() {
+    const res = await fetch("/api/site_settings");
+    const data = await res.json();
+    setSiteData(data.message);
+  }
+
+  function Timeout() {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  }
+
+  useEffect(() => {
+    Timeout();
+    fetchSiteSettings();
+  }, []);
+
+  if (loading) {
+    return null;
+  }
   return (
     <Sidebar collapsible="icon" className="bg-card">
-      <SidebarHeader className="flex items-center justify-center ">
+      <SidebarHeader className="flex items-center justify-center">
         <Link
           href={"/"}
           className="group-data-[collapsible=icon]:hidden text-2xl pt-5 flex-none font-bold truncate"
         >
-          {process.env.NEXT_PUBLIC_SITE_NAME}
+          {siteData.map((data) => data.name)}
         </Link>
         <Image
           alt=""
           className="group-data-[collapsible=icon]:block hidden"
           src={
-            "https://media.discordapp.net/attachments/1362055620785733662/1376177224763441293/Untitled.png?ex=6844db2a&is=684389aa&hm=09534c86b0f2e66689cf157ed3180eef83bc875a47f7372c60aba948989dabd7&=&format=webp&quality=lossless&width=832&height=832"
+            "https://cdn.discordapp.com/attachments/1362055620785733662/1376177224763441293/Untitled.png?ex=685e906a&is=685d3eea&hm=4a5353fc0a23b3395b4ada9bdab66fa2ba6b5533e34e02c4f14cdf7625d9d1d7&"
           }
           width={40}
           height={40}
@@ -101,11 +131,13 @@ export function AppSidebar() {
               key={index}
               className={
                 currentPath === link.url
-                  ? "flex flex-row items-center justify-center gap-2 underline underline-offset-8 decoration-primary rounded-2xl "
+                  ? `flex flex-row items-center justify-center decoration-primary gap-2 underline underline-offset-8 bg rounded-2xl`
                   : "flex flex-row items-center justify-center gap-2"
               }
               href={link.url}
-              onClick={() => { setOpenMobile(false)}}
+              onClick={() => {
+                setOpenMobile(false);
+              }}
             >
               <link.icon /> {link.title}
             </Link>
@@ -138,7 +170,9 @@ export function AppSidebar() {
                                     : "flex flex-row items-center justify-center gap-2"
                                 }
                                 href={diList.url}
-                                onClick={() => { setOpenMobile(false)}}
+                                onClick={() => {
+                                  setOpenMobile(false);
+                                }}
                               >
                                 {diList.title}
                               </Link>
